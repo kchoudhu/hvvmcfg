@@ -1,0 +1,38 @@
+[Unit]
+Description=Bootstrap Las Vegas
+Wants=libvirtd.service
+Requires=virt-guest-shutdown.target
+After=network.target
+After=time-sync.target
+After=libvirtd.service
+After=virt-guest-shutdown.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/libvirt-guests
+
+
+### Start arc-lv
+# Bring up storage
+ExecStart=-/usr/bin/virsh start net.anserinae.highcharity
+# Network routing
+ExecStart=-/usr/bin/virsh start net.anserinae.installation03
+ExecStart=/bin/sleep 60
+# Initialize sevenfoldgates
+ExecStart=-/usr/bin/virsh pool-start sevenfoldgates
+ExecStart=/bin/sleep 30
+ExecStart=-/usr/bin/virsh start net.anserinae.sevenfoldgates
+ExecStart=-/usr/bin/virsh attach-device net.anserinae.sevenfoldgates /root/.vm/usb1.xml 
+### Stop arc-lv
+ExecStop=-/usr/lib/virsh destroy net.anserinae.sevenfoldgates
+ExecStop=-/usr/lib/virsh shutdown net.anserinae.installation03
+ExecStop=/bin/sleep 30
+ExecStop=-/usr/lib/virsh shutdown net.anserinae.highcharity
+ExecStop=/bin/sleep 60
+
+RemainAfterExit=yes
+StandardOutput=journal+console
+TimeoutStopSec=0
+
+[Install]
+WantedBy=multi-user.target
