@@ -15,20 +15,27 @@ EnvironmentFile=-/etc/default/libvirt-guests
 ### Start arc-lv
 # Bring up storage
 ExecStart=-/usr/bin/virsh start net.anserinae.highcharity
-# Network routing
-ExecStart=-/usr/bin/virsh start net.anserinae.installation03
-ExecStart=/bin/sleep 60
-# Initialize sevenfoldgates
-ExecStart=-/usr/bin/virsh pool-start sevenfoldgates
 ExecStart=/bin/sleep 30
+ExecStart=-/usr/bin/virsh pool-start installation03
+ExecStart=-/usr/bin/virsh pool-start prometheus
+ExecStart=-/usr/bin/virsh pool-start divinebreath
+ExecStart=-/usr/bin/virsh pool-start sevenfoldgates
+ExecStart=-/usr/bin/virsh pool-start sevenfoldgates-2
+ExecStart=/bin/sleep 30
+ExecStart=-/usr/bin/virsh start net.anserinae.installation03
+ExecStart=-/usr/bin/virsh start net.anserinae.prometheus
+ExecStart=-/usr/bin/virsh start net.anserinae.divinebreath
 ExecStart=-/usr/bin/virsh start net.anserinae.sevenfoldgates
 ExecStart=-/usr/bin/virsh attach-device net.anserinae.sevenfoldgates /root/.vm/usb1.xml 
+
 ### Stop arc-lv
-ExecStop=-/usr/lib/virsh destroy net.anserinae.sevenfoldgates
-ExecStop=-/usr/lib/virsh shutdown net.anserinae.installation03
-ExecStop=/bin/sleep 30
-ExecStop=-/usr/lib/virsh shutdown net.anserinae.highcharity
+ExecStop=-/usr/bin/virsh shutdown net.anserinae.sevenfoldgates
+ExecStop=-/usr/bin/virsh shutdown net.anserinae.prometheus
+ExecStop=-/usr/bin/virsh shutdown net.anserinae.divinebreath
+ExecStop=-/usr/bin/virsh shutdown net.anserinae.installation03
 ExecStop=/bin/sleep 60
+ExecStop=-/usr/bin/virsh shutdown net.anserinae.highcharity
+ExecStop=/bin/sleep 30
 
 RemainAfterExit=yes
 StandardOutput=journal+console
